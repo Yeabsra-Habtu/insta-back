@@ -9,5 +9,10 @@ module.exports = {
   tokenUrl: "https://api.instagram.com/oauth/access_token",
   graphApiUrl: "https://graph.instagram.com",
   // Scopes required for the application
-  scopes: ["user_profile", "user_media"],
+  scopes: [
+    "instagram_basic",
+    "instagram_manage_comments",
+    "instagram_content_publish",
+    "pages_show_list",
+  ],
 };

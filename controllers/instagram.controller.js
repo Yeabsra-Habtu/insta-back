@@ -4,6 +4,7 @@ class InstagramController {
   async login(req, res) {
     try {
       const authUrl = instagramService.getAuthUrl();
+      console.log("auth url", authUrl);
       res.redirect(authUrl);
     } catch (error) {
       console.error("Login error:", error);

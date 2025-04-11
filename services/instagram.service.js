@@ -26,6 +26,7 @@ class InstagramService {
         redirect_uri: this.config.redirectUri,
         code,
       });
+      console.log("Response data:", response.data); // Add this line to log the response data
 
       return response.data;
     } catch (error) {
