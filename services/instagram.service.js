@@ -19,6 +19,22 @@ class InstagramService {
 
   async exchangeCodeForToken(code) {
     try {
+      // Validate required configuration
+      if (
+        !this.config.clientId ||
+        !this.config.clientSecret ||
+        !this.config.redirectUri
+      ) {
+        throw new Error("Missing required Instagram configuration parameters");
+      }
+
+      // Log request parameters for debugging (excluding sensitive data)
+      console.log("Token exchange request parameters:", {
+        tokenUrl: this.config.tokenUrl,
+        redirect_uri: this.config.redirectUri,
+        grant_type: "authorization_code",
+      });
+
       const response = await axios.post(this.config.tokenUrl, {
         client_id: this.config.clientId,
         client_secret: this.config.clientSecret,
@@ -26,15 +42,35 @@ class InstagramService {
         redirect_uri: this.config.redirectUri,
         code,
       });
-      console.log("Response data:", response.data); // Add this line to log the response data
+
+      if (!response.data || !response.data.access_token) {
+        throw new Error("Invalid response format from Instagram API");
+      }
 
       return response.data;
     } catch (error) {
-      console.error(
-        "Error exchanging code for token:",
-        error.response?.data || error.message
-      );
-      throw error;
+      // Enhanced error handling with specific error messages
+      let errorMessage = "Failed to exchange code for token";
+
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        errorMessage = `Instagram API Error: ${
+          error.response.status
+        } - ${JSON.stringify(error.response.data)}`;
+      } else if (error.request) {
+        // The request was made but no response was received
+        errorMessage = "No response received from Instagram API";
+      }
+
+      console.error("Token exchange error:", {
+        message: errorMessage,
+        originalError: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+
+      throw new Error(errorMessage);
     }
   }
 

@@ -29,7 +29,18 @@ class InstagramController {
       );
     } catch (error) {
       console.error("Callback error:", error);
-      res.status(500).json({ error: "Failed to exchange code for token" });
+
+      // Determine appropriate status code based on error type
+      let statusCode = 500;
+      if (error.message.includes("Missing required Instagram configuration")) {
+        statusCode = 400;
+      } else if (error.message.includes("Invalid response format")) {
+        statusCode = 502;
+      }
+
+      // Redirect to frontend with error
+      const errorMessage = encodeURIComponent(error.message);
+      res.redirect(`${process.env.FRONTEND_URL}?error=${errorMessage}`);
     }
   }
 
