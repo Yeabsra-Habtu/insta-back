@@ -10,9 +10,9 @@ module.exports = {
   graphApiUrl: "https://graph.instagram.com",
   // Scopes required for the application
   scopes: [
-    "instagram_basic",
-    "instagram_manage_comments",
-    "instagram_content_publish",
-    "pages_show_list",
+    "instagram_business_basic",
+    "instagram_business_content_publish",
+    "instagram_business_manage_messages",
+    "instagram_business_manage_comments",
   ],
 };
