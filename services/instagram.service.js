@@ -153,7 +153,7 @@ class InstagramService {
           },
         }
       );
-
+      console.log("Response from getMediaComments:", response); // Add this lin
       return response.data;
     } catch (error) {
       console.error(
