@@ -15,7 +15,7 @@ router.get("/media", instagramController.getMedia);
 router.post("/media/:mediaId/comments", instagramController.createComment);
 router.get("/media/:mediaId/comments", instagramController.getMediaComments);
 router.post(
-  "/media/:mediaId/comments/reply",
+  "/media/:mediaId/comment/reply",
   instagramController.replyToComment
 );
 

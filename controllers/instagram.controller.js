@@ -140,6 +140,7 @@ class InstagramController {
       }
 
       const comments = await instagramService.getMediaComments(mediaId, token);
+      console.log("Comments", comments);
       res.json(comments);
     } catch (error) {
       console.error("Comments fetch error:", error);
