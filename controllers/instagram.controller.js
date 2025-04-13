@@ -77,6 +77,23 @@ class InstagramController {
     }
   }
 
+  async getMediaComments(req, res) {
+    try {
+      const { mediaId } = req.params;
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!token) {
+        return res.status(401).json({ error: "Access token is required" });
+      }
+
+      const comments = await instagramService.getMediaComments(mediaId, token);
+      res.json(comments);
+    } catch (error) {
+      console.error("Comments fetch error:", error);
+      res.status(500).json({ error: "Failed to fetch comments" });
+    }
+  }
+
   async replyToComment(req, res) {
     try {
       const { mediaId } = req.params;

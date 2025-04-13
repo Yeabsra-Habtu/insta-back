@@ -121,6 +121,29 @@ class InstagramService {
     }
   }
 
+  async getMediaComments(mediaId, accessToken) {
+    try {
+      const response = await axios.get(
+        `${this.config.graphApiUrl}/${mediaId}/comments`,
+        {
+          params: {
+            fields:
+              "id,text,username,timestamp,replies{id,text,username,timestamp}",
+            access_token: accessToken,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching media comments:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+
   async replyToComment(mediaId, commentId, message, accessToken) {
     try {
       if (!commentId) {
