@@ -35,6 +35,7 @@ class InstagramService {
         grant_type: "authorization_code",
       });
 
+      console.log("Code:", code);
       const response = await axios.post(this.config.tokenUrl, {
         client_id: this.config.clientId,
         client_secret: this.config.clientSecret,
@@ -42,6 +43,7 @@ class InstagramService {
         redirect_uri: this.config.redirectUri,
         code,
       });
+      console.log("Response:", response);
 
       if (!response.data || !response.data.access_token) {
         throw new Error("Invalid response format from Instagram API");

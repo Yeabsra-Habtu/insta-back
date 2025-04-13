@@ -20,7 +20,10 @@ class InstagramController {
           .status(400)
           .json({ error: "Authorization code is required" });
       }
-
+      console.log("Req body", req.body);
+      console.log("Req query", req.query);
+      console.log("Req params", req.params);
+      console.log("Req headers", req.headers);
       const tokenData = await instagramService.exchangeCodeForToken(code);
 
       // Redirect to frontend with token
