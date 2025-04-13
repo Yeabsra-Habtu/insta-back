@@ -123,35 +123,55 @@ class InstagramService {
 
   async getMediaComments(mediaId, accessToken) {
     try {
+      // First get the media details to ensure we have the correct media ID
+      const mediaResponse = await axios.get(
+        `${this.config.graphApiUrl}/${mediaId}`,
+        {
+          params: {
+            fields: "id,comments_count",
+            access_token: accessToken,
+          },
+        }
+      );
+
+      console.log("Media details:", mediaResponse.data);
+
       const response = await axios.get(
         `${this.config.graphApiUrl}/${mediaId}/comments`,
         {
           params: {
             fields:
-              "id,text,username,timestamp,like_count,replies.limit(25){id,text,username,timestamp,like_count}",
+              "id,text,username,timestamp,like_count,replies{id,text,username,timestamp,like_count}",
             access_token: accessToken,
             limit: 50,
           },
         }
       );
 
-      // Log the full response for debugging
       console.log(
-        "Instagram API Response:",
+        "Comments API Response:",
         JSON.stringify(response.data, null, 2)
       );
 
-      // Handle empty responses properly
-      if (!response.data) {
+      if (!response.data || !response.data.data) {
+        console.log("No comments data found");
         return { data: [], paging: null };
       }
 
-      // Ensure we have a valid data structure
+      // Process and structure the comments data
       const result = {
-        data: Array.isArray(response.data.data) ? response.data.data : [],
+        data: response.data.data.map((comment) => ({
+          id: comment.id,
+          text: comment.text,
+          username: comment.username,
+          timestamp: comment.timestamp,
+          like_count: comment.like_count,
+          replies: comment.replies?.data || [],
+        })),
         paging: response.data.paging || null,
       };
 
+      console.log("Processed comments:", JSON.stringify(result, null, 2));
       return result;
     } catch (error) {
       console.error(
