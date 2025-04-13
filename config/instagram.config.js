@@ -14,8 +14,5 @@ module.exports = {
     "instagram_business_content_publish",
     "instagram_business_manage_messages",
     "instagram_business_manage_comments",
-    "instagram_basic",
-    "instagram_manage_comments",
-    "pages_read_engagement",
   ],
 };
