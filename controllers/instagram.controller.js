@@ -104,6 +104,62 @@ class InstagramController {
       res.status(500).json({ error: "Failed to reply to comment" });
     }
   }
+
+  async createComment(req, res) {
+    try {
+      const { mediaId } = req.params;
+      const { message } = req.body;
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!token) {
+        return res.status(401).json({ error: "Access token is required" });
+      }
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      const comment = await instagramService.createComment(
+        mediaId,
+        message,
+        token
+      );
+      res.json(comment);
+    } catch (error) {
+      console.error("Comment creation error:", error);
+      res.status(500).json({ error: "Failed to create comment" });
+    }
+  }
+
+  async getMediaComments(req, res) {
+    try {
+      const { mediaId } = req.params;
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!token) {
+        return res.status(401).json({ error: "Access token is required" });
+      }
+
+      const comments = await instagramService.getMediaComments(mediaId, token);
+      res.json(comments);
+    } catch (error) {
+      console.error("Comments fetch error:", error);
+      res.status(500).json({ error: "Failed to fetch comments" });
+    }
+  }
+
+  async logout(req, res) {
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return res.status(401).json({ error: "Access token is required" });
+      }
+      // Here we could implement additional cleanup if needed
+      res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Logout error:", error);
+      res.status(500).json({ error: "Failed to logout" });
+    }
+  }
 }
 
 module.exports = new InstagramController();

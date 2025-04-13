@@ -141,6 +141,48 @@ class InstagramService {
       throw error;
     }
   }
+
+  async getMediaComments(mediaId, accessToken) {
+    try {
+      const response = await axios.get(
+        `${this.config.graphApiUrl}/${mediaId}/comments`,
+        {
+          params: {
+            fields: "id,text,timestamp,username,replies",
+            access_token: accessToken,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching comments:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+
+  async createComment(mediaId, message, accessToken) {
+    try {
+      const response = await axios.post(
+        `${this.config.graphApiUrl}/${mediaId}/comments`,
+        {
+          message,
+          access_token: accessToken,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error creating comment:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
 }
 
 module.exports = new InstagramService();
