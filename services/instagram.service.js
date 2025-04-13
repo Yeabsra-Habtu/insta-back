@@ -128,19 +128,41 @@ class InstagramService {
         {
           params: {
             fields:
-              "id,text,username,timestamp,replies{id,text,username,timestamp}",
+              "id,text,username,timestamp,like_count,replies.limit(25){id,text,username,timestamp,like_count}",
             access_token: accessToken,
+            limit: 50,
           },
         }
       );
 
-      return response.data;
+      // Log the full response for debugging
+      console.log(
+        "Instagram API Response:",
+        JSON.stringify(response.data, null, 2)
+      );
+
+      // Handle empty responses properly
+      if (!response.data) {
+        return { data: [], paging: null };
+      }
+
+      // Ensure we have a valid data structure
+      const result = {
+        data: Array.isArray(response.data.data) ? response.data.data : [],
+        paging: response.data.paging || null,
+      };
+
+      return result;
     } catch (error) {
       console.error(
         "Error fetching media comments:",
         error.response?.data || error.message
       );
-      throw error;
+
+      // Return a structured error response
+      throw new Error(
+        error.response?.data?.error?.message || "Failed to fetch comments"
+      );
     }
   }
 
