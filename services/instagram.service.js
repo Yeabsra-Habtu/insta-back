@@ -36,13 +36,15 @@ class InstagramService {
       });
 
       console.log("Code:", code);
-      const response = await axios.post(this.config.tokenUrl, {
+      const data = {
         client_id: this.config.clientId,
         client_secret: this.config.clientSecret,
         grant_type: "authorization_code",
         redirect_uri: this.config.redirectUri,
         code,
-      });
+      };
+      console.log("Data:", data);
+      const response = await axios.post(this.config.tokenUrl, data);
       console.log("Response:", response);
 
       if (!response.data || !response.data.access_token) {
