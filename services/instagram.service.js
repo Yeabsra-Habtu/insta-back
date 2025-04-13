@@ -106,7 +106,7 @@ class InstagramService {
       const response = await axios.get(`${this.config.graphApiUrl}/me/media`, {
         params: {
           fields:
-            "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp",
+            "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,comments{id,text,username,timestamp}",
           access_token: accessToken,
         },
       });
@@ -123,11 +123,14 @@ class InstagramService {
 
   async replyToComment(mediaId, commentId, message, accessToken) {
     try {
+      if (!commentId) {
+        throw new Error("Comment ID is required");
+      }
+
       const response = await axios.post(
-        `${this.config.graphApiUrl}/${mediaId}/replies`,
+        `${this.config.graphApiUrl}/${commentId}/replies`,
         {
           message,
-          comment_id: commentId,
           access_token: accessToken,
         }
       );
@@ -138,7 +141,9 @@ class InstagramService {
         "Error replying to comment:",
         error.response?.data || error.message
       );
-      throw error;
+      throw new Error(
+        error.response?.data?.error?.message || "Failed to reply to comment"
+      );
     }
   }
 }
