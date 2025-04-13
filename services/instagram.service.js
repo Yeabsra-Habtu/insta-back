@@ -36,15 +36,19 @@ class InstagramService {
       });
 
       console.log("Code:", code);
-      const data = {
-        client_id: this.config.clientId,
-        client_secret: this.config.clientSecret,
-        grant_type: "authorization_code",
-        redirect_uri: this.config.redirectUri,
-        code,
-      };
-      console.log("Data:", data);
-      const response = await axios.post(this.config.tokenUrl, data);
+      const formData = new URLSearchParams();
+      formData.append("client_id", this.config.clientId);
+      formData.append("client_secret", this.config.clientSecret);
+      formData.append("grant_type", "authorization_code");
+      formData.append("redirect_uri", this.config.redirectUri);
+      formData.append("code", code);
+
+      console.log("FormData:", formData.toString());
+      const response = await axios.post(this.config.tokenUrl, formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
       console.log("Response:", response);
 
       if (!response.data || !response.data.access_token) {
