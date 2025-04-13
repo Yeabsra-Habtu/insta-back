@@ -106,7 +106,7 @@ class InstagramService {
       const response = await axios.get(`${this.config.graphApiUrl}/me/media`, {
         params: {
           fields:
-            "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,comments{id,text,username,timestamp}",
+            "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp",
           access_token: accessToken,
         },
       });
@@ -121,81 +121,13 @@ class InstagramService {
     }
   }
 
-  async getMediaComments(mediaId, accessToken) {
-    try {
-      // First get the media details to ensure we have the correct media ID
-      const mediaResponse = await axios.get(
-        `${this.config.graphApiUrl}/${mediaId}`,
-        {
-          params: {
-            fields: "id,comments_count",
-            access_token: accessToken,
-          },
-        }
-      );
-
-      console.log("Media details:", mediaResponse.data);
-
-      const response = await axios.get(
-        `${this.config.graphApiUrl}/${mediaId}/comments`,
-        {
-          params: {
-            fields:
-              "id,text,username,timestamp,like_count,replies{id,text,username,timestamp,like_count}",
-            access_token: accessToken,
-            limit: 50,
-          },
-        }
-      );
-
-      console.log(
-        "Comments API Response:",
-        JSON.stringify(response.data, null, 2)
-      );
-
-      if (!response.data || !response.data.data) {
-        console.log("No comments data found");
-        return { data: [], paging: null };
-      }
-
-      // Process and structure the comments data
-      const result = {
-        data: response.data.data.map((comment) => ({
-          id: comment.id,
-          text: comment.text,
-          username: comment.username,
-          timestamp: comment.timestamp,
-          like_count: comment.like_count,
-          replies: comment.replies?.data || [],
-        })),
-        paging: response.data.paging || null,
-      };
-
-      console.log("Processed comments:", JSON.stringify(result, null, 2));
-      return result;
-    } catch (error) {
-      console.error(
-        "Error fetching media comments:",
-        error.response?.data || error.message
-      );
-
-      // Return a structured error response
-      throw new Error(
-        error.response?.data?.error?.message || "Failed to fetch comments"
-      );
-    }
-  }
-
   async replyToComment(mediaId, commentId, message, accessToken) {
     try {
-      if (!commentId) {
-        throw new Error("Comment ID is required");
-      }
-
       const response = await axios.post(
-        `${this.config.graphApiUrl}/${commentId}/replies`,
+        `${this.config.graphApiUrl}/${mediaId}/replies`,
         {
           message,
+          comment_id: commentId,
           access_token: accessToken,
         }
       );
@@ -206,9 +138,7 @@ class InstagramService {
         "Error replying to comment:",
         error.response?.data || error.message
       );
-      throw new Error(
-        error.response?.data?.error?.message || "Failed to reply to comment"
-      );
+      throw error;
     }
   }
 }

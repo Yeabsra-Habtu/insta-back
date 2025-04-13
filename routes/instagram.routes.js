@@ -11,7 +11,6 @@ router.get("/profile", instagramController.getProfile);
 router.get("/media", instagramController.getMedia);
 
 // Interaction routes
-router.get("/media/:mediaId/comments", instagramController.getMediaComments);
 router.post("/comment/:mediaId/reply", instagramController.replyToComment);
 
 module.exports = router;
