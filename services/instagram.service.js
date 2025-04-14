@@ -90,8 +90,23 @@ class InstagramService {
           access_token: accessToken,
         },
       });
+      console.log("Response from getUserProfile:", response); // Add this line
+      // Fetch profile picture separately
+      const pictureResponse = await axios.get(
+        `${this.config.graphApiUrl}/me/picture`,
+        {
+          params: {
+            access_token: accessToken,
+            redirect: false,
+          },
+        }
+      );
 
-      return response.data;
+      // Combine profile data with picture data
+      return {
+        ...response.data,
+        profile_picture: pictureResponse.data.data.url,
+      };
     } catch (error) {
       console.error(
         "Error fetching user profile:",
@@ -148,12 +163,25 @@ class InstagramService {
         `${this.config.graphApiUrl}/${mediaId}/comments`,
         {
           params: {
-            fields: "id,text,timestamp,username,replies",
+            fields:
+              "id,message,created_time,from,comment_count,like_count,message_tags,parent,permalink_url",
             access_token: accessToken,
           },
         }
       );
-      console.log("Response from getMediaComments:", response); // Add this lin
+      console.log("Response from getMediaComments:", response);
+
+      // Check if we have pagination but empty data
+      if (
+        response.data &&
+        response.data.paging &&
+        (!response.data.data || response.data.data.length === 0)
+      ) {
+        console.log(
+          "Pagination exists but no comments found. This might indicate permission issues."
+        );
+      }
+
       return response.data;
     } catch (error) {
       console.error(
