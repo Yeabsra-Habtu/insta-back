@@ -156,7 +156,7 @@ class InstagramService {
     }
   }
 
-  async replyToComment(commentId, message, accessToken) {
+  async replyToComment(mediaId, commentId, message, accessToken) {
     try {
       const response = await axios.post(
         `${this.config.graphApiUrl}/${commentId}/replies`,
