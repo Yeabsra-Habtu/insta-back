@@ -180,14 +180,14 @@ class InstagramService {
   async getMediaComments(mediaId, accessToken) {
     try {
       const response = await axios.get(
-        `${this.config.graphApiUrl}/${mediaId}/comments?access_token=${accessToken}`
-        // {
-        //   params: {
-        //     fields:
-        //       "id,message,created_time,from,comment_count,like_count,message_tags,parent,permalink_url",
-        //     access_token: accessToken,
-        //   },
-        // }
+        `${this.config.graphApiUrl}/${mediaId}/comments`,
+        {
+          params: {
+            fields:
+              "id,message,created_time,from,comment_count,like_count,message_tags,parent,permalink_url",
+            access_token: accessToken,
+          },
+        }
       );
       console.log("Response from getMediaComments:", response);
 
