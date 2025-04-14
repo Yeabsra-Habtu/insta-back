@@ -201,6 +201,38 @@ class InstagramService {
         );
       }
 
+      // For each comment, fetch its replies
+      if (
+        response.data &&
+        response.data.data &&
+        response.data.data.length > 0
+      ) {
+        const commentsWithReplies = await Promise.all(
+          response.data.data.map(async (comment) => {
+            try {
+              const repliesResponse = await this.getCommentReplies(
+                comment.id,
+                accessToken
+              );
+              return {
+                ...comment,
+                replies: repliesResponse.data || [],
+              };
+            } catch (replyError) {
+              console.error(
+                `Error fetching replies for comment ${comment.id}:`,
+                replyError.response?.data || replyError.message
+              );
+              return {
+                ...comment,
+                replies: [],
+              };
+            }
+          })
+        );
+        response.data.data = commentsWithReplies;
+      }
+
       return response.data;
     } catch (error) {
       console.error(
@@ -225,6 +257,30 @@ class InstagramService {
     } catch (error) {
       console.error(
         "Error creating comment:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+
+  async getCommentReplies(commentId, accessToken) {
+    try {
+      const response = await axios.get(
+        `${this.config.graphApiUrl}/${commentId}/replies`,
+        {
+          params: {
+            fields:
+              "id,text,created_time,from,like_count,message_tags,permalink_url",
+            access_token: accessToken,
+          },
+        }
+      );
+
+      console.log(`Replies for comment ${commentId}:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(
+        `Error fetching replies for comment ${commentId}:`,
         error.response?.data || error.message
       );
       throw error;

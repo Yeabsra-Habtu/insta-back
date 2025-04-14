@@ -18,5 +18,9 @@ router.post(
   "/media/:mediaId/comment/reply",
   instagramController.replyToComment
 );
+router.get(
+  "/comments/:commentId/replies",
+  instagramController.getCommentReplies
+);
 
 module.exports = router;

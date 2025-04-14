@@ -161,6 +161,26 @@ class InstagramController {
       res.status(500).json({ error: "Failed to logout" });
     }
   }
+
+  async getCommentReplies(req, res) {
+    try {
+      const { commentId } = req.params;
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!token) {
+        return res.status(401).json({ error: "Access token is required" });
+      }
+
+      const replies = await instagramService.getCommentReplies(
+        commentId,
+        token
+      );
+      res.json(replies);
+    } catch (error) {
+      console.error("Comment replies fetch error:", error);
+      res.status(500).json({ error: "Failed to fetch comment replies" });
+    }
+  }
 }
 
 module.exports = new InstagramController();
