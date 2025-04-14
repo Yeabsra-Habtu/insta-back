@@ -184,7 +184,7 @@ class InstagramService {
         {
           params: {
             fields:
-              "id,message,created_time,from,comment_count,like_count,message_tags,parent,permalink_url",
+              "id,text,created_time,from,comment_count,like_count,message_tags,parent,permalink_url",
             access_token: accessToken,
           },
         }
