@@ -100,8 +100,8 @@ class InstagramController {
       );
       res.json(reply);
     } catch (error) {
-      console.error("Comment reply error:", error);
-      res.status(500).json({ error: "Failed to reply to comment" });
+      console.error("Comment reply error:", error.message);
+      res.status(500).json({ error });
     }
   }
 
