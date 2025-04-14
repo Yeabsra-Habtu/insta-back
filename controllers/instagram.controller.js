@@ -4,7 +4,6 @@ class InstagramController {
   async login(req, res) {
     try {
       const authUrl = instagramService.getAuthUrl();
-      console.log("auth url", authUrl);
       res.redirect(authUrl);
     } catch (error) {
       console.error("Login error:", error);
@@ -20,10 +19,7 @@ class InstagramController {
           .status(400)
           .json({ error: "Authorization code is required" });
       }
-      console.log("Req body", req.body);
-      console.log("Req query", req.query);
-      console.log("Req params", req.params);
-      console.log("Req headers", req.headers);
+
       const tokenData = await instagramService.exchangeCodeForToken(code);
 
       // Redirect to frontend with token
@@ -140,7 +136,6 @@ class InstagramController {
       }
 
       const comments = await instagramService.getMediaComments(mediaId, token);
-      console.log("Comments", comments);
       res.json(comments);
     } catch (error) {
       console.error("Comments fetch error:", error);

@@ -28,14 +28,6 @@ class InstagramService {
         throw new Error("Missing required Instagram configuration parameters");
       }
 
-      // Log request parameters for debugging (excluding sensitive data)
-      console.log("Token exchange request parameters:", {
-        tokenUrl: this.config.tokenUrl,
-        redirect_uri: this.config.redirectUri,
-        grant_type: "authorization_code",
-      });
-
-      console.log("Code:", code);
       const formData = new URLSearchParams();
       formData.append("client_id", this.config.clientId);
       formData.append("client_secret", this.config.clientSecret);
@@ -43,13 +35,11 @@ class InstagramService {
       formData.append("redirect_uri", this.config.redirectUri);
       formData.append("code", code);
 
-      console.log("FormData:", formData.toString());
       const response = await axios.post(this.config.tokenUrl, formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-      console.log("Response:", response);
 
       if (!response.data || !response.data.access_token) {
         throw new Error("Invalid response format from Instagram API");
@@ -90,37 +80,6 @@ class InstagramService {
           access_token: accessToken,
         },
       });
-      console.log("Response from getUserProfile:", response);
-
-      // Try to fetch profile picture separately with error handling
-      let profilePicture = null;
-      // try {
-      //   const pictureResponse = await axios.get(
-      //     `${this.config.graphApiUrl}/${response.data.id}/picture`,
-      //     {
-      //       params: {
-      //         access_token: accessToken,
-      //         redirect: false,
-      //       },
-      //     }
-      //   );
-      //   console.log("Picture response:", pictureResponse);
-
-      //   // Check if the picture response has the expected structure
-      //   if (
-      //     pictureResponse.data &&
-      //     pictureResponse.data.data &&
-      //     pictureResponse.data.data.url
-      //   ) {
-      //     profilePicture = pictureResponse.data.data.url;
-      //   }
-      // } catch (pictureError) {
-      //   console.error(
-      //     "Error fetching profile picture:",
-      //     pictureError.response?.data || pictureError.message
-      //   );
-      //   // Continue without profile picture
-      // }
 
       // Combine profile data with picture data (if available)
       return {
@@ -188,7 +147,6 @@ class InstagramService {
           },
         }
       );
-      console.log("Response from getMediaComments:", response);
 
       // Check if we have pagination but empty data
       if (
@@ -276,7 +234,6 @@ class InstagramService {
         }
       );
 
-      console.log(`Replies for comment ${commentId}:`, response.data);
       return response.data;
     } catch (error) {
       console.error(
