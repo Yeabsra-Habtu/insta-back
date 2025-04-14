@@ -86,7 +86,7 @@ class InstagramService {
     try {
       const response = await axios.get(`${this.config.graphApiUrl}/me`, {
         params: {
-          fields: "id,username,account_type,media_count",
+          fields: "id,username,account_type,media_count,profile_picture_url",
           access_token: accessToken,
         },
       });
@@ -94,38 +94,38 @@ class InstagramService {
 
       // Try to fetch profile picture separately with error handling
       let profilePicture = null;
-      try {
-        const pictureResponse = await axios.get(
-          `${this.config.graphApiUrl}/${response.data.id}/picture`,
-          {
-            params: {
-              access_token: accessToken,
-              redirect: false,
-            },
-          }
-        );
-        console.log("Picture response:", pictureResponse);
+      // try {
+      //   const pictureResponse = await axios.get(
+      //     `${this.config.graphApiUrl}/${response.data.id}/picture`,
+      //     {
+      //       params: {
+      //         access_token: accessToken,
+      //         redirect: false,
+      //       },
+      //     }
+      //   );
+      //   console.log("Picture response:", pictureResponse);
 
-        // Check if the picture response has the expected structure
-        if (
-          pictureResponse.data &&
-          pictureResponse.data.data &&
-          pictureResponse.data.data.url
-        ) {
-          profilePicture = pictureResponse.data.data.url;
-        }
-      } catch (pictureError) {
-        console.error(
-          "Error fetching profile picture:",
-          pictureError.response?.data || pictureError.message
-        );
-        // Continue without profile picture
-      }
+      //   // Check if the picture response has the expected structure
+      //   if (
+      //     pictureResponse.data &&
+      //     pictureResponse.data.data &&
+      //     pictureResponse.data.data.url
+      //   ) {
+      //     profilePicture = pictureResponse.data.data.url;
+      //   }
+      // } catch (pictureError) {
+      //   console.error(
+      //     "Error fetching profile picture:",
+      //     pictureError.response?.data || pictureError.message
+      //   );
+      //   // Continue without profile picture
+      // }
 
       // Combine profile data with picture data (if available)
       return {
         ...response.data,
-        profile_picture: profilePicture,
+        profile_picture: response.data.profile_picture_url,
       };
     } catch (error) {
       console.error(
