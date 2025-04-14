@@ -90,22 +90,42 @@ class InstagramService {
           access_token: accessToken,
         },
       });
-      console.log("Response from getUserProfile:", response); // Add this line
-      // Fetch profile picture separately
-      const pictureResponse = await axios.get(
-        `${this.config.graphApiUrl}/me/picture`,
-        {
-          params: {
-            access_token: accessToken,
-            redirect: false,
-          },
-        }
-      );
+      console.log("Response from getUserProfile:", response);
 
-      // Combine profile data with picture data
+      // Try to fetch profile picture separately with error handling
+      let profilePicture = null;
+      try {
+        const pictureResponse = await axios.get(
+          `${this.config.graphApiUrl}/${response.data.id}/picture`,
+          {
+            params: {
+              access_token: accessToken,
+              redirect: false,
+            },
+          }
+        );
+        console.log("Picture response:", pictureResponse);
+
+        // Check if the picture response has the expected structure
+        if (
+          pictureResponse.data &&
+          pictureResponse.data.data &&
+          pictureResponse.data.data.url
+        ) {
+          profilePicture = pictureResponse.data.data.url;
+        }
+      } catch (pictureError) {
+        console.error(
+          "Error fetching profile picture:",
+          pictureError.response?.data || pictureError.message
+        );
+        // Continue without profile picture
+      }
+
+      // Combine profile data with picture data (if available)
       return {
         ...response.data,
-        profile_picture: pictureResponse.data.data.url,
+        profile_picture: profilePicture,
       };
     } catch (error) {
       console.error(
@@ -160,14 +180,14 @@ class InstagramService {
   async getMediaComments(mediaId, accessToken) {
     try {
       const response = await axios.get(
-        `${this.config.graphApiUrl}/${mediaId}/comments`,
-        {
-          params: {
-            fields:
-              "id,message,created_time,from,comment_count,like_count,message_tags,parent,permalink_url",
-            access_token: accessToken,
-          },
-        }
+        `${this.config.graphApiUrl}/${mediaId}/comments?access_token=${accessToken}`
+        // {
+        //   params: {
+        //     fields:
+        //       "id,message,created_time,from,comment_count,like_count,message_tags,parent,permalink_url",
+        //     access_token: accessToken,
+        //   },
+        // }
       );
       console.log("Response from getMediaComments:", response);
 
